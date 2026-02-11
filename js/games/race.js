@@ -51,6 +51,8 @@ class RaceGame {
       const x = ((clientX - rect.left) / rect.width) * this.width;
       const y = ((clientY - rect.top) / rect.height) * this.height;
       
+      console.log('Race game click:', { x, y, phase: this.phase, selectedHorse: this.selectedHorse, betAmount: this.betAmount });
+      
       if (this.phase === "betting") {
         this.handleBettingClick(x, y);
       } else if (this.phase === "result") {
@@ -63,10 +65,13 @@ class RaceGame {
   }
 
   handleBettingClick(x, y) {
+    console.log('handleBettingClick called:', { x, y });
+    
     // 检查是否点击了马匹卡片
     this.horses.forEach((horse, index) => {
       const cardY = 155 + index * 85;
       if (y >= cardY && y <= cardY + 70 && x >= 25 && x <= this.width - 25) {
+        console.log('Selected horse:', horse.id);
         this.selectedHorse = horse.id;
       }
     });
@@ -88,9 +93,14 @@ class RaceGame {
       
       betButtons.forEach((btn, i) => {
         const btnX = startX + i * (buttonWidth + buttonGap);
-        if (x >= btnX && x <= btnX + buttonWidth && 
-            y >= betY + 20 && y <= betY + 64 &&
-            this.currentFragments >= btn.amount) {
+        const inButton = x >= btnX && x <= btnX + buttonWidth && 
+                        y >= betY + 20 && y <= betY + 64;
+        const hasFragments = this.currentFragments >= btn.amount;
+        
+        console.log(`Button ${i} (${btn.amount}):`, { btnX, inButton, hasFragments, currentFragments: this.currentFragments });
+        
+        if (inButton && hasFragments) {
+          console.log('Placing bet:', btn.amount);
           this.placeBet(btn.amount);
         }
       });
