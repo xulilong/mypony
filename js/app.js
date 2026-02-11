@@ -195,7 +195,33 @@ class App {
   shareFortuneResult() {
     const result = this.fortune.getResult();
     if (!result) return;
-    const text = `我的2026马年运势：${result.score}分！\n\n💼 ${result.career}\n💰 ${result.wealth}\n💕 ${result.love}\n\n快来测测你的马年运势，领养专属小马吧！`;
+    
+    const user = JSON.parse(localStorage.getItem("pony_user") || '{"name":"我"}');
+    
+    // 生成运势参数
+    const params = new URLSearchParams({
+      fortune: 'true',
+      name: user.name,
+      personality: result.personality.name,
+      career: result.career,
+      wealth: result.wealth,
+      color: result.luckyColor,
+      number: result.luckyNumber,
+      blessing: result.personality.blessing
+    });
+    
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    
+    const text = `🐴 马年运势测试
+
+我的2026马年运势：${result.score}分！
+
+💼 ${result.career}
+💰 ${result.wealth}
+💕 ${result.love}
+
+👉 快来测测你的马年运势，领养专属小马吧！
+${url}`;
     
     if (navigator.share) {
       navigator.share({ title: "马年运势测试", text }).catch(() => {});
