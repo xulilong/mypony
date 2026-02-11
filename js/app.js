@@ -542,6 +542,11 @@ class App {
     const user = JSON.parse(localStorage.getItem("pony_user"));
     const fortune = this.shareCard.generateFortune(this.horse, user.name);
     
+    // 计算运势总分（基于星级）
+    const careerScore = fortune.careerStars.length * 20;
+    const wealthScore = fortune.wealthStars.length * 20;
+    const totalScore = Math.round((careerScore + wealthScore) / 2);
+    
     // 生成运势参数
     const params = new URLSearchParams({
       fortune: 'true',
@@ -556,12 +561,32 @@ class App {
     
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     
+    console.log('生成的URL:', url); // 调试信息
+    
+    // 生成分享文案
+    const shareText = `🐴 马年运势测试
+
+${user.name}的2026马年运势：${totalScore}分！
+
+🎭 性格：${fortune.personality}
+💼 事业：${fortune.careerStars} ${fortune.careerText}
+💰 财运：${fortune.wealthStars} ${fortune.wealthText}
+🎨 幸运色：${fortune.luckyColor} | 幸运数：${fortune.luckyNumber}
+
+🎊 ${fortune.blessing}
+
+👉 快来测测你的马年运势，领养专属小马吧！
+${url}`;
+    
+    console.log('分享文案:', shareText); // 调试信息
+    
     // 复制到剪贴板
-    navigator.clipboard.writeText(url).then(() => {
-      this.showToast("🔗 运势链接已复制！快去分享给好友吧");
-    }).catch(() => {
-      // 降级方案：显示链接
-      prompt("复制下面的链接分享给好友：", url);
+    navigator.clipboard.writeText(shareText).then(() => {
+      this.showToast("🔗 运势文案已复制！快去分享给好友吧");
+    }).catch((err) => {
+      console.error('复制失败:', err);
+      // 降级方案：显示文案
+      alert("复制下面的内容分享给好友：\n\n" + shareText);
     });
   }
   
