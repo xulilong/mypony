@@ -14,7 +14,6 @@ import { RhythmGame } from "./games/rhythm.js";
 import { MatchGame } from "./games/match.js";
 import { RaceGame } from "./games/race.js";
 import { FortuneSystem, ZODIAC_SIGNS, COLORS, PERSONALITIES } from "./fortune.js";
-import { AssistSystem } from "./assist.js";
 
 class App {
   constructor() {
@@ -28,7 +27,6 @@ class App {
     this.achievements = new AchievementSystem();
     this.shareCard = new ShareCardGenerator();
     this.fortune = new FortuneSystem();
-    this.assist = new AssistSystem();
     this.currentGame = null;
     this.cooldownTimers = {};
     this.lastPhrase = "";
@@ -38,11 +36,41 @@ class App {
   init() {
     const user = localStorage.getItem("pony_user");
     this.horse = Horse.load();
+    
+    // 更新测试人数
+    this.updateTestCount();
 
     if (!user || !this.horse) {
       this.showAdoptScreen();
     } else {
       this.showMainScreen();
+    }
+  }
+  
+  // 获取并更新测试人数
+  updateTestCount() {
+    // 基础数字（项目启动时的初始值）
+    const baseCount = 1280;
+    
+    // 获取本地测试记录
+    let localTests = parseInt(localStorage.getItem("pony_global_test_count") || "0");
+    
+    // 如果是第一次访问，增加计数
+    if (!localStorage.getItem("pony_user_counted")) {
+      localTests++;
+      localStorage.setItem("pony_global_test_count", localTests);
+      localStorage.setItem("pony_user_counted", "true");
+    }
+    
+    // 总数 = 基础数 + 本地测试数
+    const totalCount = baseCount + localTests;
+    
+    // 格式化显示（千位分隔符）
+    const formattedCount = totalCount.toLocaleString('zh-CN');
+    
+    const countEl = document.getElementById("testCount");
+    if (countEl) {
+      countEl.textContent = formattedCount;
     }
   }
 
@@ -195,9 +223,6 @@ class App {
     const user = JSON.parse(localStorage.getItem("pony_user"));
     document.getElementById("userName").textContent = user.name;
 
-    // 助力系统UI更新
-    this.updateAssistUI();
-
     // 显示衰减提示
     if (this.horse.hunger < 30) {
       setTimeout(() => this.showToast("😿 小马好饿，快喂喂它吧～"), 500);
@@ -215,27 +240,6 @@ class App {
     this.updateFragmentCount();
     this.bindButtons();
     this.startCooldownDisplay();
-  }
-
-  updateAssistUI() {
-    const hasBoost = this.assist.hasBoost();
-    const boostBtn = document.getElementById("btnBoost");
-    const banner = document.getElementById("assistBanner");
-
-    if (hasBoost) {
-      const remaining = this.assist.getBoostRemaining();
-      boostBtn.style.display = "block";
-      boostBtn.textContent = `⚡ 加速中 ${remaining}分钟`;
-      banner.style.display = "none";
-    } else {
-      boostBtn.style.display = "none";
-      const count = this.assist.getTodayAssistCount();
-      if (count < 3) {
-        banner.style.display = "flex";
-      } else {
-        banner.style.display = "none";
-      }
-    }
   }
 
   renderHorse() {
@@ -288,8 +292,6 @@ class App {
     
     // 其他
     document.getElementById("btnReset").addEventListener("click", () => this.resetHorse());
-    document.getElementById("btnOpenAssist").addEventListener("click", () => this.showAssist());
-    document.getElementById("btnBoost").addEventListener("click", () => this.showAssist());
   }
 
   showGamesModal() {
@@ -320,17 +322,6 @@ class App {
       case "pat": result = this.horse.pat(); break;
       case "groom": result = this.horse.groom(); break;
       case "feed": result = this.horse.feed(); break;
-    }
-
-    // 助力加速：如果有加速buff，额外增加属性
-    if (this.assist.hasBoost()) {
-      if (type === "feed") {
-        this.horse.hunger = Math.min(100, this.horse.hunger + 5);
-        this.horse.happiness = Math.min(100, this.horse.happiness + 1);
-      } else {
-        this.horse.happiness = Math.min(100, this.horse.happiness + 2);
-      }
-      this.horse.save();
     }
 
     this.controller.recordInteraction(type);
@@ -738,70 +729,6 @@ class App {
     document.getElementById("gameScreen").classList.add("hidden");
     document.getElementById("gameScore").textContent = "得分: 0";
     this.renderHorse();
-  }
-
-  // 助力系统
-  showAssist() {
-    const modal = document.getElementById("assistModal");
-    document.getElementById("myAssistCode").textContent = this.assist.getMyCode();
-    document.getElementById("assistProgress").textContent = `${this.assist.getTodayAssistCount()}/3`;
-    
-    const list = this.assist.getAssistedList();
-    const listEl = document.getElementById("assistListContent");
-    if (list.length === 0) {
-      listEl.innerHTML = '<p class="empty-assist">暂无助力记录</p>';
-    } else {
-      listEl.innerHTML = list.map(a => {
-        const time = new Date(a.time);
-        return `<div class="assist-record">
-          <span class="assist-friend-name">${a.name}</span>
-          <span class="assist-time">${time.getHours()}:${String(time.getMinutes()).padStart(2, '0')}</span>
-        </div>`;
-      }).join("");
-    }
-
-    modal.classList.remove("hidden");
-  }
-
-  copyAssistCode() {
-    const code = this.assist.getMyCode();
-    const text = this.assist.getShareText();
-    navigator.clipboard.writeText(text).then(() => {
-      this.showToast("📋 助力信息已复制，快去分享给好友吧！");
-    }).catch(() => {
-      this.showToast(`你的助力码：${code}`);
-    });
-  }
-
-  simulateAssist() {
-    const result = this.assist.simulateFriendAssist();
-    if (result.success) {
-      this.showToast("🎉 好友助力成功！获得1小时双倍成长速度");
-      this.updateAssistUI();
-      this.showAssist(); // 刷新
-    } else {
-      this.showToast(result.reason);
-    }
-  }
-
-  helpFriend() {
-    const input = document.getElementById("friendCodeInput");
-    const code = input.value.trim().toUpperCase();
-    if (!code) {
-      this.showToast("请输入好友助力码");
-      return;
-    }
-    const result = this.assist.assistFriend(code);
-    if (result.success) {
-      this.showToast("✅ 助力成功！你的好友会收到加速buff");
-      input.value = "";
-      // 自己也领养小马（如果还没有）
-      if (!this.horse) {
-        this.showToast("你也可以领养自己的小马啦！");
-      }
-    } else {
-      this.showToast(result.reason);
-    }
   }
 
   startCooldownDisplay() {

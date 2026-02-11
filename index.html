@@ -50,7 +50,7 @@
       </div>
       <h1>🐴 2026马年运势测试</h1>
       <p class="subtitle">测测你的马年运势，领养专属吉祥小马</p>
-      <p class="subtitle-small">已有 <span class="highlight">128,456</span> 人测试</p>
+      <p class="subtitle-small">已有 <span class="highlight" id="testCount">加载中...</span> 人测试</p>
       <button id="btnStartFortune" class="btn-adopt">开始测试</button>
     </div>
 
@@ -105,12 +105,6 @@
           <span id="userName"></span>
         </div>
       </div>
-    </div>
-
-    <!-- 助力提示条 -->
-    <div class="assist-banner" id="assistBanner">
-      <span class="assist-text">💝 邀请好友助力，获得双倍成长速度</span>
-      <button class="btn-assist-action" id="btnOpenAssist">去助力</button>
     </div>
 
     <!-- 状态条 -->
@@ -301,42 +295,7 @@
     </div>
   </div>
 
-  <!-- 助力弹窗 -->
-  <div id="assistModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('assistModal')">
-    <div class="modal">
-      <h3>💝 好友助力</h3>
-      <div class="assist-content">
-        <div class="assist-my-code">
-          <p class="assist-label">我的助力码</p>
-          <div class="assist-code-box">
-            <span class="assist-code" id="myAssistCode">PXXX</span>
-            <button class="btn-copy-code" onclick="app.copyAssistCode()">复制</button>
-          </div>
-          <p class="assist-tip">分享给好友，好友助力后你获得1小时双倍成长</p>
-        </div>
 
-        <div class="assist-status">
-          <p class="assist-label">今日助力进度</p>
-          <div class="assist-progress">
-            <span id="assistProgress">0/3</span>
-          </div>
-          <button class="btn-simulate-assist" onclick="app.simulateAssist()">🎁 模拟好友助力（Demo）</button>
-        </div>
-
-        <div class="assist-list" id="assistList">
-          <p class="assist-label">最近助力记录</p>
-          <div id="assistListContent" class="assist-list-content">暂无记录</div>
-        </div>
-
-        <div class="assist-input">
-          <p class="assist-label">帮助好友</p>
-          <input type="text" id="friendCodeInput" class="friend-code-input" placeholder="输入好友助力码" maxlength="15"/>
-          <button class="btn-help-friend" onclick="app.helpFriend()">助力好友</button>
-        </div>
-      </div>
-      <button class="modal-close" onclick="app.closeModal('assistModal')">关闭</button>
-    </div>
-  </div>
 
   <!-- 游戏弹窗 -->
   <!-- 游戏全屏页面 -->
