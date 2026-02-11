@@ -9,16 +9,16 @@ class JumpGame {
 
     // 小马
     this.horse = { x: 80, y: 200, vy: 0, size: 36 };
-    this.gravity = 0.45;
-    this.jumpForce = -7.5;
+    this.gravity = 900; // 像素/秒²
+    this.jumpForce = -450; // 像素/秒
 
     // 障碍物（栅栏）
     this.pipes = [];
     this.pipeWidth = 50;
     this.pipeGap = 130;
-    this.pipeSpeed = 2.5;
+    this.pipeSpeed = 150; // 像素/秒
     this.pipeTimer = 0;
-    this.pipeInterval = 100;
+    this.pipeInterval = 1.5; // 秒
 
     // 地面
     this.groundY = this.height - 40;
@@ -31,6 +31,9 @@ class JumpGame {
     this.gameOver = false;
     this.started = false;
     this.frame = 0;
+    
+    // 时间控制
+    this.lastTime = performance.now();
 
     // 云朵装饰
     this.clouds = [];
@@ -39,7 +42,7 @@ class JumpGame {
         x: Math.random() * this.width,
         y: 20 + Math.random() * 80,
         size: 20 + Math.random() * 30,
-        speed: 0.3 + Math.random() * 0.5
+        speed: 18 + Math.random() * 30 // 像素/秒
       });
     }
 
@@ -80,18 +83,23 @@ class JumpGame {
 
   loop() {
     if (!this.running) return;
-    this.update();
+    
+    const now = performance.now();
+    const dt = Math.min((now - this.lastTime) / 1000, 0.1); // 限制最大 dt 为 0.1 秒
+    this.lastTime = now;
+    
+    this.update(dt);
     this.draw();
     requestAnimationFrame(() => this.loop());
   }
 
-  update() {
+  update(dt) {
     if (!this.started || this.gameOver) return;
     this.frame++;
 
-    // 小马物理
-    this.horse.vy += this.gravity;
-    this.horse.y += this.horse.vy;
+    // 小马物理 - 基于时间
+    this.horse.vy += this.gravity * dt;
+    this.horse.y += this.horse.vy * dt;
 
     // 地面碰撞
     if (this.horse.y + this.horse.size / 2 > this.groundY) {
@@ -105,16 +113,16 @@ class JumpGame {
     }
 
     // 地面滚动
-    this.groundScroll = (this.groundScroll + this.pipeSpeed) % 40;
+    this.groundScroll = (this.groundScroll + this.pipeSpeed * dt) % 40;
 
     // 云朵
     this.clouds.forEach(c => {
-      c.x -= c.speed;
+      c.x -= c.speed * dt;
       if (c.x + c.size < 0) c.x = this.width + c.size;
     });
 
     // 生成障碍
-    this.pipeTimer++;
+    this.pipeTimer += dt;
     if (this.pipeTimer >= this.pipeInterval) {
       this.pipeTimer = 0;
       const gapY = 60 + Math.random() * (this.groundY - this.pipeGap - 120);
@@ -123,7 +131,7 @@ class JumpGame {
 
     // 移动障碍
     for (let i = this.pipes.length - 1; i >= 0; i--) {
-      this.pipes[i].x -= this.pipeSpeed;
+      this.pipes[i].x -= this.pipeSpeed * dt;
 
       // 计分
       if (!this.pipes[i].scored && this.pipes[i].x + this.pipeWidth < this.horse.x) {
@@ -131,7 +139,7 @@ class JumpGame {
         this.score++;
         // 加速
         if (this.score % 5 === 0) {
-          this.pipeSpeed = Math.min(5, this.pipeSpeed + 0.3);
+          this.pipeSpeed = Math.min(300, this.pipeSpeed + 18);
           this.pipeGap = Math.max(100, this.pipeGap - 3);
         }
       }
@@ -398,9 +406,16 @@ class JumpGame {
     this.frame = 0;
     this.running = true;
     
+    // 重置时间
+    this.lastTime = performance.now();
+    
     // 重置小马位置
     this.horse.y = this.canvas.height / 2;
     this.horse.vy = 0;
+    
+    // 重置速度
+    this.pipeSpeed = 150;
+    this.pipeGap = 130;
     
     // 清空障碍物
     this.pipes = [];

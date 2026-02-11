@@ -19,7 +19,11 @@ class MatchGame {
     this.cols = 4;
     this.cellSize = 70;
     this.offsetX = (this.width - this.cols * this.cellSize) / 2;
-    this.offsetY = 80;
+    this.offsetY = 100; // 从80改为100，给顶部更多空间
+    
+    // 计算虚拟按钮位置（预留空间）
+    this.virtualButtonY = this.height - 85;
+    this.virtualButtonSize = 70;
     
     // 图标类型 - 增加到5种
     this.icons = [
@@ -533,8 +537,8 @@ class MatchGame {
   }
 
   drawVirtualButtons() {
-    const buttonSize = 70;
-    const buttonY = this.height - 90;
+    const buttonSize = this.virtualButtonSize;
+    const buttonY = this.virtualButtonY;
     const leftX = 70;
     const rightX = this.width - 70;
     const downX = this.width / 2;

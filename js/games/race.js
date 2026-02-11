@@ -43,10 +43,13 @@ class RaceGame {
   setupInput() {
     this.clickHandler = (e) => {
       if (!this.running) return;
+      e.preventDefault();
       
       const rect = this.canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = ((clientX - rect.left) / rect.width) * this.width;
+      const y = ((clientY - rect.top) / rect.height) * this.height;
       
       if (this.phase === "betting") {
         this.handleBettingClick(x, y);
@@ -56,6 +59,7 @@ class RaceGame {
     };
     
     this.canvas.addEventListener("click", this.clickHandler);
+    this.canvas.addEventListener("touchstart", this.clickHandler, { passive: false });
   }
 
   handleBettingClick(x, y) {
@@ -624,6 +628,7 @@ class RaceGame {
 
   cleanup() {
     this.canvas.removeEventListener("click", this.clickHandler);
+    this.canvas.removeEventListener("touchstart", this.clickHandler);
   }
 }
 
