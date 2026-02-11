@@ -15,7 +15,7 @@ class MatchGame {
     this.piecesPlaced = 0; // 已放置的图标数
     
     // 棋盘设置
-    this.rows = 8;
+    this.rows = 7; // 从8改为7，减少一行避免被按钮遮挡
     this.cols = 4;
     this.cellSize = 70;
     this.offsetX = (this.width - this.cols * this.cellSize) / 2;
@@ -565,6 +565,9 @@ class MatchGame {
   drawButton(x, y, size, text, color, borderColor, pressed = false) {
     const radius = size / 2;
     
+    // 设置半透明度
+    this.ctx.globalAlpha = 0.85;
+    
     // 阴影效果
     if (!pressed) {
       this.ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
@@ -612,6 +615,9 @@ class MatchGame {
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
     this.ctx.fillText(text, x, y + 2);
+    
+    // 重置透明度
+    this.ctx.globalAlpha = 1;
   }
   
   // 检测点是否在按钮内
