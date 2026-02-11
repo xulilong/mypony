@@ -172,6 +172,50 @@
     </div>
   </div>
 
+  <!-- 运势详情页面 -->
+  <div id="fortuneDetailScreen" class="screen hidden">
+    <div class="fortune-detail-container">
+      <div class="fortune-detail-header">
+        <h1>🔮 <span id="fortuneDetailName">TA</span>的马年运势</h1>
+        <p class="fortune-detail-subtitle">2026 龙马精神 · 万事如意</p>
+      </div>
+      
+      <div class="fortune-detail-content">
+        <div class="fortune-detail-card">
+          <div class="fortune-detail-item">
+            <span class="fortune-detail-label">🎭 性格类型</span>
+            <span class="fortune-detail-value" id="fortunePersonality">-</span>
+          </div>
+          <div class="fortune-detail-item">
+            <span class="fortune-detail-label">💼 事业运势</span>
+            <span class="fortune-detail-value" id="fortuneCareer">-</span>
+          </div>
+          <div class="fortune-detail-item">
+            <span class="fortune-detail-label">💰 财富运势</span>
+            <span class="fortune-detail-value" id="fortuneWealth">-</span>
+          </div>
+          <div class="fortune-detail-item">
+            <span class="fortune-detail-label">🎨 幸运色彩</span>
+            <span class="fortune-detail-value" id="fortuneColor">-</span>
+          </div>
+          <div class="fortune-detail-item">
+            <span class="fortune-detail-label">🔢 幸运数字</span>
+            <span class="fortune-detail-value" id="fortuneNumber">-</span>
+          </div>
+        </div>
+        
+        <div class="fortune-blessing-card">
+          <p class="fortune-blessing-text" id="fortuneBlessing">🎊 龙马精神，万事如意！</p>
+        </div>
+        
+        <div class="fortune-detail-actions">
+          <button class="btn-fortune-test" onclick="app.startMyFortuneTest()">🎯 测测我的运势</button>
+          <button class="btn-fortune-back" onclick="app.closeFortuneDetail()">返回首页</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
 
@@ -290,6 +334,7 @@
       <p class="share-tip">长按图片保存，分享好运给朋友</p>
       <div class="share-actions">
         <button class="btn-share-download" onclick="app.downloadShareImage()">📥 保存图片</button>
+        <button class="btn-share-link" onclick="app.shareFortuneLink()">🔗 分享运势链接</button>
         <button class="modal-close" onclick="app.closeModal('shareModal')">关闭</button>
       </div>
     </div>

@@ -39,6 +39,13 @@ class App {
     
     // 更新测试人数
     this.updateTestCount();
+    
+    // 检查是否有运势分享参数
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('fortune')) {
+      this.showSharedFortune(urlParams);
+      return;
+    }
 
     if (!user || !this.horse) {
       this.showAdoptScreen();
@@ -528,6 +535,84 @@ class App {
     a.download = "我的专属小马-马年运势.png";
     a.click();
     this.showToast("📥 卡片已保存！");
+  }
+  
+  // 分享运势链接
+  shareFortuneLink() {
+    const user = JSON.parse(localStorage.getItem("pony_user"));
+    const fortune = this.shareCard.generateFortune(this.horse, user.name);
+    
+    // 生成运势参数
+    const params = new URLSearchParams({
+      fortune: 'true',
+      name: user.name,
+      personality: fortune.personality,
+      career: `${fortune.careerStars} ${fortune.careerText}`,
+      wealth: `${fortune.wealthStars} ${fortune.wealthText}`,
+      color: fortune.luckyColor,
+      number: fortune.luckyNumber,
+      blessing: fortune.blessing
+    });
+    
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    
+    // 复制到剪贴板
+    navigator.clipboard.writeText(url).then(() => {
+      this.showToast("🔗 运势链接已复制！快去分享给好友吧");
+    }).catch(() => {
+      // 降级方案：显示链接
+      prompt("复制下面的链接分享给好友：", url);
+    });
+  }
+  
+  // 显示分享的运势
+  showSharedFortune(urlParams) {
+    document.getElementById("fortuneDetailScreen").classList.remove("hidden");
+    
+    const name = urlParams.get('name') || 'TA';
+    const personality = urlParams.get('personality') || '-';
+    const career = urlParams.get('career') || '-';
+    const wealth = urlParams.get('wealth') || '-';
+    const color = urlParams.get('color') || '-';
+    const number = urlParams.get('number') || '-';
+    const blessing = urlParams.get('blessing') || '龙马精神，万事如意！';
+    
+    document.getElementById("fortuneDetailName").textContent = name;
+    document.getElementById("fortunePersonality").textContent = personality;
+    document.getElementById("fortuneCareer").textContent = career;
+    document.getElementById("fortuneWealth").textContent = wealth;
+    document.getElementById("fortuneColor").textContent = color;
+    document.getElementById("fortuneNumber").textContent = number;
+    document.getElementById("fortuneBlessing").textContent = `🎊 ${blessing}`;
+  }
+  
+  // 开始测试自己的运势
+  startMyFortuneTest() {
+    // 清除URL参数
+    window.history.replaceState({}, '', window.location.pathname);
+    
+    // 隐藏运势详情页
+    document.getElementById("fortuneDetailScreen").classList.add("hidden");
+    
+    // 显示领养页面
+    this.showAdoptScreen();
+  }
+  
+  // 关闭运势详情页
+  closeFortuneDetail() {
+    // 清除URL参数
+    window.history.replaceState({}, '', window.location.pathname);
+    
+    // 隐藏运势详情页
+    document.getElementById("fortuneDetailScreen").classList.add("hidden");
+    
+    // 检查用户是否已有小马
+    const user = localStorage.getItem("pony_user");
+    if (!user || !this.horse) {
+      this.showAdoptScreen();
+    } else {
+      this.showMainScreen();
+    }
   }
 
   // 背包

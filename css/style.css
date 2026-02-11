@@ -441,3 +441,142 @@ body {
   .btn-action .icon { font-size: 1.3rem; }
   .func-buttons { grid-template-columns: repeat(3, 1fr); gap: 6px; }
 }
+
+
+/* ===== 运势详情页面 ===== */
+.fortune-detail-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fortune-detail-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.fortune-detail-header h1 {
+  font-size: 1.8rem;
+  color: var(--brown);
+  margin-bottom: 8px;
+}
+
+.fortune-detail-subtitle {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.fortune-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fortune-detail-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.fortune-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.fortune-detail-item:last-child {
+  border-bottom: none;
+}
+
+.fortune-detail-label {
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.fortune-detail-value {
+  font-size: 0.95rem;
+  color: var(--brown);
+  font-weight: 600;
+}
+
+.fortune-blessing-card {
+  background: linear-gradient(135deg, #FFD93D 0%, #FFB84D 100%);
+  border-radius: 16px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+}
+
+.fortune-blessing-text {
+  font-size: 1.2rem;
+  color: #8B6F5E;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.fortune-detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btn-fortune-test,
+.btn-fortune-back {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-fortune-test {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7BC8A4 100%);
+  color: #2D3748;
+  box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+}
+
+.btn-fortune-test:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(168, 230, 207, 0.4);
+}
+
+.btn-fortune-back {
+  background: rgba(255, 255, 255, 0.9);
+  color: #666;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-fortune-back:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* 分享链接按钮样式 */
+.btn-share-link {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #A8E6CF 0%, #7BC8A4 100%);
+  color: #2D3748;
+  border: none;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+}
+
+.btn-share-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(168, 230, 207, 0.4);
+}
