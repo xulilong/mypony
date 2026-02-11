@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>养只小马 🐴</title>
+  <link rel="stylesheet" href="assets/ui-sprites.css">
+  <link rel="stylesheet" href="css/game-style.css">
+  <link rel="stylesheet" href="css/main-screen.css">
+  <link rel="stylesheet" href="css/modals.css">
+</head>
+<body>
+
+  <!-- 领养页面 - 运势测试 -->
+  <div id="adoptScreen" class="adopt-screen hidden">
+    <!-- 步骤1：欢迎 -->
+    <div id="fortuneStep1" class="fortune-step">
+      <div class="adopt-horse-preview">
+        <svg viewBox="40 30 230 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="previewGrad" cx="50%" cy="40%">
+              <stop offset="0%" stop-color="#D4C4A8"/>
+              <stop offset="100%" stop-color="#C4A882"/>
+            </radialGradient>
+          </defs>
+          <g>
+            <path d="M95 150 Q70 130 65 155 Q60 175 80 170" fill="#8B6F5E" opacity="0.9"/>
+            <rect x="105" y="175" width="16" height="45" rx="6" fill="#A89070"/>
+            <rect x="125" y="175" width="16" height="45" rx="6" fill="#A89070"/>
+            <ellipse cx="140" cy="155" rx="50" ry="35" fill="url(#previewGrad)"/>
+            <rect x="160" y="175" width="16" height="45" rx="6" fill="#B09878"/>
+            <rect x="180" y="175" width="16" height="45" rx="6" fill="#B09878"/>
+            <ellipse cx="113" cy="222" rx="10" ry="5" fill="#5C4033"/>
+            <ellipse cx="133" cy="222" rx="10" ry="5" fill="#5C4033"/>
+            <ellipse cx="168" cy="222" rx="10" ry="5" fill="#5C4033"/>
+            <ellipse cx="188" cy="222" rx="10" ry="5" fill="#5C4033"/>
+            <path d="M175 140 Q185 110 170 70" fill="url(#previewGrad)" stroke="#C4A882" stroke-width="1"/>
+            <ellipse cx="165" cy="70" rx="25" ry="20" fill="url(#previewGrad)"/>
+            <polygon points="152,48 148,32 158,42" fill="#C4A882"/>
+            <polygon points="172,48 175,32 180,42" fill="#C4A882"/>
+            <circle cx="158" cy="67" r="3.5" fill="#333"/>
+            <circle cx="157" cy="66" r="1.2" fill="#fff"/>
+            <path d="M170 78 Q175 82 180 78" fill="none" stroke="#8B6F5E" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="178" cy="74" r="1.5" fill="#8B6F5E"/>
+            <ellipse cx="153" cy="75" rx="5" ry="3" fill="#FFB6C1" opacity="0.5"/>
+            <path d="M155 52 Q150 40 160 35 Q170 45 165 55" fill="#8B6F5E"/>
+            <path d="M170 70 Q175 95 170 110 Q165 125 175 135" fill="#8B6F5E" opacity="0.8"/>
+          </g>
+        </svg>
+      </div>
+      <h1>🐴 2026马年运势测试</h1>
+      <p class="subtitle">测测你的马年运势，领养专属吉祥小马</p>
+      <p class="subtitle-small">已有 <span class="highlight">128,456</span> 人测试</p>
+      <button id="btnStartFortune" class="btn-adopt">开始测试</button>
+    </div>
+
+    <!-- 步骤2：选择生肖 -->
+    <div id="fortuneStep2" class="fortune-step hidden">
+      <h2 class="fortune-title">你的生肖是？</h2>
+      <div class="fortune-options" id="zodiacOptions"></div>
+    </div>
+
+    <!-- 步骤3：选择颜色 -->
+    <div id="fortuneStep3" class="fortune-step hidden">
+      <h2 class="fortune-title">你最喜欢的颜色？</h2>
+      <div class="fortune-options" id="colorOptions"></div>
+    </div>
+
+    <!-- 步骤4：选择性格 -->
+    <div id="fortuneStep4" class="fortune-step hidden">
+      <h2 class="fortune-title">你的性格更偏向？</h2>
+      <div class="fortune-options" id="personalityOptions"></div>
+    </div>
+
+    <!-- 步骤5：运势结果 -->
+    <div id="fortuneStep5" class="fortune-step hidden">
+      <div class="fortune-result">
+        <h2 class="fortune-result-title">🎉 你的马年运势</h2>
+        <div class="fortune-score">
+          <span class="score-label">综合运势</span>
+          <span class="score-value" id="fortuneScore">88</span>
+          <span class="score-unit">分</span>
+        </div>
+        <div class="fortune-details" id="fortuneDetails"></div>
+        <div class="fortune-horse-intro">
+          <p class="horse-intro-title">✨ 专属小马已为你准备</p>
+          <p class="horse-intro-text" id="horseIntroText"></p>
+        </div>
+        <button id="btnAdoptFortune" class="btn-adopt">领养我的小马</button>
+        <button class="btn-share-fortune" id="btnShareFortune">📤 分享运势</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主界面 -->
+  <div id="mainScreen" class="main-screen hidden">
+    <!-- 顶栏 -->
+    <div class="top-bar">
+      <span class="app-title">🐴 养只小马</span>
+      <div class="top-right">
+        <button class="boost-badge" id="btnBoost" style="display:none;">⚡ 加速中</button>
+        <span class="fragment-badge">🧩 <span id="fragmentCount">0</span></span>
+        <div class="user-info">
+          <span>🧑</span>
+          <span id="userName"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 助力提示条 -->
+    <div class="assist-banner" id="assistBanner">
+      <span class="assist-text">💝 邀请好友助力，获得双倍成长速度</span>
+      <button class="btn-assist-action" id="btnOpenAssist">去助力</button>
+    </div>
+
+    <!-- 状态条 -->
+    <div class="status-bars">
+      <div class="bar-group">
+        <span class="bar-icon">🍎</span>
+        <div class="bar-track"><div class="bar-fill" id="hungerBar"></div></div>
+        <span class="bar-val"><span id="hungerVal">50</span>%</span>
+      </div>
+      <div class="bar-group">
+        <span class="bar-icon">😊</span>
+        <div class="bar-track"><div class="bar-fill" id="happyBar"></div></div>
+        <span class="bar-val"><span id="happyVal">50</span>%</span>
+      </div>
+    </div>
+
+    <!-- 小马展示区 -->
+    <div class="horse-area">
+      <div id="phraseBubble" class="phrase-bubble hidden"></div>
+      <div id="horseCanvas"></div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+      <button class="btn-action" id="btnPat">
+        <span class="icon">🤚</span>
+        <span class="label">拍拍马屁</span>
+        <span class="cooldown-text"></span>
+      </button>
+      <button class="btn-action" id="btnGroom">
+        <span class="icon">🪮</span>
+        <span class="label">梳理马毛</span>
+        <span class="cooldown-text"></span>
+      </button>
+      <button class="btn-action" id="btnFeed">
+        <span class="icon">🌾</span>
+        <span class="label">喂养</span>
+        <span class="cooldown-text"></span>
+      </button>
+    </div>
+
+    <!-- 功能按钮网格 - 精简版 -->
+    <div class="func-buttons-compact">
+      <button class="btn-func-main" id="btnGames">
+        <span class="func-icon">🎮</span>
+        <span class="func-label">小游戏</span>
+      </button>
+      <button class="btn-func-main" id="btnCheckin">
+        <span class="func-icon">📅</span>
+        <span class="func-label">签到</span>
+      </button>
+      <button class="btn-func-main" id="btnBag">
+        <span class="func-icon">🎒</span>
+        <span class="func-label">背包</span>
+      </button>
+      <button class="btn-func-main" id="btnMore">
+        <span class="func-icon">⚙️</span>
+        <span class="func-label">更多</span>
+      </button>
+    </div>
+
+    <!-- 重置 -->
+    <div class="reset-row">
+      <button class="btn-reset-small" id="btnReset">🔄 重置小马</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- 小游戏选择弹窗 -->
+  <div id="gamesModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('gamesModal')">
+    <div class="modal">
+      <h3>🎮 选择小游戏</h3>
+      <div class="games-grid">
+        <button class="game-card" id="btnGameRace">
+          <span class="game-card-icon">🏇</span>
+          <div class="game-card-info">
+            <span class="game-card-name">一马当先</span>
+            <span class="game-card-desc">领先群雄，赢取好运</span>
+          </div>
+        </button>
+        <button class="game-card" id="btnGameMatch">
+          <span class="game-card-icon">🎯</span>
+          <div class="game-card-info">
+            <span class="game-card-name">马上有喜</span>
+            <span class="game-card-desc">喜事连连，消除烦恼</span>
+          </div>
+        </button>
+        <button class="game-card" id="btnGameJump">
+          <span class="game-card-icon">🐴</span>
+          <div class="game-card-info">
+            <span class="game-card-name">马不停蹄</span>
+            <span class="game-card-desc">勤奋努力，勇往直前</span>
+          </div>
+        </button>
+        <button class="game-card" id="btnGameCatch">
+          <span class="game-card-icon">🌾</span>
+          <div class="game-card-info">
+            <span class="game-card-name">马上有钱</span>
+            <span class="game-card-desc">接住财运，福禄双全</span>
+          </div>
+        </button>
+        <button class="game-card" id="btnGameRhythm">
+          <span class="game-card-icon">🎵</span>
+          <div class="game-card-info">
+            <span class="game-card-name">万马奔腾</span>
+            <span class="game-card-desc">踏准节奏，势不可挡</span>
+          </div>
+        </button>
+      </div>
+      <button class="modal-close" onclick="app.closeModal('gamesModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 更多功能弹窗 -->
+  <div id="moreModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('moreModal')">
+    <div class="modal">
+      <h3>⚙️ 更多功能</h3>
+      <div class="more-list">
+        <button class="more-item" id="btnCraft">
+          <span class="more-icon">🧩</span>
+          <span class="more-text">装饰合成</span>
+        </button>
+        <button class="more-item" id="btnStatus">
+          <span class="more-icon">❤️</span>
+          <span class="more-text">小马状态</span>
+        </button>
+        <button class="more-item" id="btnAchievement">
+          <span class="more-icon">🏅</span>
+          <span class="more-text">成就系统</span>
+        </button>
+        <button class="more-item" id="btnShare">
+          <span class="more-icon">🎴</span>
+          <span class="more-text">分享卡片</span>
+        </button>
+      </div>
+      <button class="modal-close" onclick="app.closeModal('moreModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 背包弹窗 -->
+  <div id="bagModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('bagModal')">
+    <div class="modal">
+      <h3>🎒 装饰背包</h3>
+      <div id="bagList"></div>
+      <button class="modal-close" onclick="app.closeModal('bagModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 状态弹窗 -->
+  <div id="statusModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('statusModal')">
+    <div class="modal">
+      <h3>❤️ 小马状态</h3>
+      <div id="statusBody"></div>
+      <button class="modal-close" onclick="app.closeModal('statusModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 合成弹窗 -->
+  <div id="craftModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('craftModal')">
+    <div class="modal">
+      <h3>🧩 装饰合成 <span class="craft-frag-info">碎片: <span id="craftFragCount">0</span></span></h3>
+      <div id="craftList"></div>
+      <button class="modal-close" onclick="app.closeModal('craftModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 成就弹窗 -->
+  <div id="achieveModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('achieveModal')">
+    <div class="modal">
+      <h3>🏅 成就 <span class="achieve-progress" id="achieveCount"></span></h3>
+      <div id="achieveList"></div>
+      <button class="modal-close" onclick="app.closeModal('achieveModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 分享卡片弹窗 -->
+  <div id="shareModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('shareModal')">
+    <div class="modal modal-share">
+      <h3>🎴 吉祥卡片</h3>
+      <img id="shareImage" class="share-image" alt="吉祥卡片"/>
+      <p class="share-tip">长按图片保存，分享好运给朋友</p>
+      <div class="share-actions">
+        <button class="btn-share-download" onclick="app.downloadShareImage()">📥 保存图片</button>
+        <button class="modal-close" onclick="app.closeModal('shareModal')">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 助力弹窗 -->
+  <div id="assistModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeModal('assistModal')">
+    <div class="modal">
+      <h3>💝 好友助力</h3>
+      <div class="assist-content">
+        <div class="assist-my-code">
+          <p class="assist-label">我的助力码</p>
+          <div class="assist-code-box">
+            <span class="assist-code" id="myAssistCode">PXXX</span>
+            <button class="btn-copy-code" onclick="app.copyAssistCode()">复制</button>
+          </div>
+          <p class="assist-tip">分享给好友，好友助力后你获得1小时双倍成长</p>
+        </div>
+
+        <div class="assist-status">
+          <p class="assist-label">今日助力进度</p>
+          <div class="assist-progress">
+            <span id="assistProgress">0/3</span>
+          </div>
+          <button class="btn-simulate-assist" onclick="app.simulateAssist()">🎁 模拟好友助力（Demo）</button>
+        </div>
+
+        <div class="assist-list" id="assistList">
+          <p class="assist-label">最近助力记录</p>
+          <div id="assistListContent" class="assist-list-content">暂无记录</div>
+        </div>
+
+        <div class="assist-input">
+          <p class="assist-label">帮助好友</p>
+          <input type="text" id="friendCodeInput" class="friend-code-input" placeholder="输入好友助力码" maxlength="15"/>
+          <button class="btn-help-friend" onclick="app.helpFriend()">助力好友</button>
+        </div>
+      </div>
+      <button class="modal-close" onclick="app.closeModal('assistModal')">关闭</button>
+    </div>
+  </div>
+
+  <!-- 游戏弹窗 -->
+  <!-- 游戏全屏页面 -->
+  <div id="gameScreen" class="game-screen hidden">
+    <div class="game-header">
+      <button class="btn-game-back" onclick="app.closeGame()">← 返回</button>
+      <span class="game-title" id="gameTitle">小游戏</span>
+      <div class="game-score" id="gameScore">得分: 0</div>
+    </div>
+    <div class="game-canvas-container">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
